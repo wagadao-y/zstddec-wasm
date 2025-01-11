@@ -1,3 +1,4 @@
+最新版の[Zstandard](https://github.com/facebook/zstd/tree/v1.5.6)でビルド出来なくなっていたことへの対応版
 # zstddec
 
 [![Latest NPM release](https://img.shields.io/npm/v/zstddec.svg)](https://www.npmjs.com/package/zstddec)
@@ -43,13 +44,15 @@ npm test
 
 ## Building from source
 
-Compiled from https://github.com/facebook/zstd/tree/dev/contrib/single_file_libs, with the
+Compiled from https://github.com/facebook/zstd/tree/v1.5.6/build/single_file_libs, with the
 following steps:
 
 ```shell
+git clone https://github.com/facebook/zstd.git -b v1.5.6
+cd zstd/build/single_file_libs
 ./combine.sh -r ../../lib -o zstddeclib.c zstddeclib-in.c
-emcc zstddeclib.c -Oz -s EXPORTED_FUNCTIONS="['_ZSTD_decompress', '_ZSTD_findDecompressedSize', '_ZSTD_isError', '_malloc', '_free']" -s ALLOW_MEMORY_GROWTH=1 -s MALLOC=emmalloc -o zstddec.wasm
-base64 zstddec.wasm > zstddec.txt
+emcc -Oz zstddeclib.c -s EXPORTED_FUNCTIONS="['_ZSTD_decompress', '_ZSTD_findDecompressedSize', '_ZSTD_isError', '_malloc', '_free']"  -s ALLOW_MEMORY_GROWTH=1  --no-entry  -o zstddec.wasm
+base64 -w 0 zstddec.wasm > zstddec.txt
 ```
 
 The base64 string written to `zstddec.txt` is embedded as the `wasm` variable at the bottom
